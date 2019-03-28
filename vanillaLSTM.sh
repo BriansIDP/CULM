@@ -14,9 +14,9 @@ python train_with_dataloader.py \
     --nlayers 1 \
     --batch_size 64 \
     --bptt 12 \
-    --wdecay 1e-6 \
+    --wdecay 5e-6 \
     --model LSTM \
     --reset 1 \
     --logfile LOGs/rnn1L.log \
-    --save models/model.12.1L.1epoch.pt
+    --save models/model.12.1L.pt
 
