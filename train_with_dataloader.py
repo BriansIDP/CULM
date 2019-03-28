@@ -237,7 +237,7 @@ def train(model, train_data, lr):
             loss = criterion(output)
             loss.backward()
         else:
-            output, hidden = model(data, hidden, separate=0, eosidx=eosidx)
+            output, hidden = model(data, hidden, separate=args.reset, eosidx=eosidx)
             loss = criterion(output.view(-1, ntokens), targets)
             loss.backward()
         # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
