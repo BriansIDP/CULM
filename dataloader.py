@@ -34,34 +34,38 @@ class Dictionary(object):
         return len(self.idx2word)
 
 class LMdata(Dataset):
-    def __init__(self, data_file, dictionary, individual_utt = False):
+    def __init__(self, filelist, dictionary):
         '''Load data_file'''
-        self.data_file = data_file
-        self.data = []
-        with open(self.data_file, 'r') as f:
+        self.files = []
+        with open(filelist, 'r') as f:
             for line in f:
-                words = line.split() + ['<eos>']
-                self.data += words
+                self.files.append(line.strip())
         self.dictionary = dictionary
-        self.individual_utt = individual_utt
 
     def __len__(self):
-        return len(self.data)
+        return len(self.files)
 
     def __getitem__(self, idx):
-        if self.data[idx] in self.dictionary.word2idx:
-            return self.dictionary.word2idx[self.data[idx]]
-        else:
-            return self.dictionary.word2idx['OOV']
+        word_ind = []
+        with open(self.files[idx], 'r') as fin:
+            for line in fin:
+                words = line.split() + ['<eos>']
+                for word in words:
+                    if word in self.dictionary.word2idx:
+                        word_ind.append(self.dictionary.word2idx[word])
+                    else:
+                        word_ind.append(self.dictionary.word2idx['OOV'])
+        return word_ind
 
 def collate_fn(batch):
-    return torch.LongTensor(batch)
+    return torch.LongTensor(batch).view(-1)
 
-def create(datapath, dictfile, batchSize=1, shuffle=False, workers=0):
+def create(datapath, batchSize=1, shuffle=False, workers=0):
     loaders = []
+    dictfile = os.path.join(datapath, 'dictionary.txt')
     dictionary = Dictionary(dictfile)
     for split in ['train', 'valid', 'test']:
-        data_file = os.path.join(datapath, '%s.txt' %split)
+        data_file = os.path.join(datapath, '%s.scp' %split)
         dataset = LMdata(data_file, dictionary)
         loaders.append(DataLoader(dataset=dataset, batch_size=batchSize,
                                   shuffle=shuffle, collate_fn=collate_fn,
@@ -70,7 +74,7 @@ def create(datapath, dictfile, batchSize=1, shuffle=False, workers=0):
 
 if __name__ == "__main__":
     datapath = sys.argv[1]
-    dictfile = sys.argv[2]
-    traindata, valdata, testdata = create(datapath, dictfile, batchSize=1000000, workers=0)
+    traindata, valdata, testdata = create(datapath, batchSize=1, workers=0)
     for i_batch, sample_batched in enumerate(traindata):
+        import pdb; pdb.set_trace()
         print(i_batch, sample_batched.size())
