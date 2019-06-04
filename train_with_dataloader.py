@@ -9,7 +9,6 @@ import torch.onnx
 from operator import itemgetter
 
 import dataloader
-import dataloader_letter
 import model
 
 arglist = []
@@ -280,7 +279,7 @@ for pairs in arglist:
 # Loop over epochs.
 lr = args.lr
 best_val_loss = None
-train_loader, val_loader, test_loader = dataloader.create(args.data, os.path.join(args.data, 'dictionary.txt'), batchSize=1000000, workers=0)
+train_loader, val_loader, test_loader = dataloader.create(args.data, batchSize=1, workers=0)
 
 # At any point you can hit Ctrl + C to break out of training early.
 if not args.evalmode:
