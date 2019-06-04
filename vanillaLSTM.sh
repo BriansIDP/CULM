@@ -1,11 +1,14 @@
 export CUDA_VISIBLE_DEVICES=3 #${X_SGE_CUDA_DEVICE}
 # export PATH="/home/miproj/urop.2018/gs534/Software/anaconda3/bin:$PATH"
 
+mkdir -p LOGs
+mkdir -p models
+
 python train_with_dataloader.py \
     --data data/AMI/ \
     --cuda \
     --emsize 256 \
-    --nhid 768 \
+    --nhid 256 \
     --dropout 0.5 \
     --rnndrop 0.25 \
     --epochs 30 \
